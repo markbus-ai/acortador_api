@@ -49,10 +49,6 @@ async def comprobrar():
     return "Holaaaaaaaaa"
 
 
-@app.get("/")
-def read root():
-    return "Welcome to shorten url api"
-
 @app.post("/shortener")
 async def acortar(long_url: Url):
     try:
