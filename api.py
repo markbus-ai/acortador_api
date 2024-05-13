@@ -49,7 +49,7 @@ async def comprobrar():
     return "Holaaaaaaaaa"
 
 
-app.get("/")
+@app.get("/")
 def read root():
     return "Welcome to shorten url api"
 
