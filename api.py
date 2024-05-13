@@ -6,7 +6,7 @@ from pydantic import BaseModel
 import re
 
 
-app = FastAPI()
+app = FastAPI(root_path="https://acortador-api.onrender.com")
 urls = []
 
 # Permitir todas las solicitudes CORS desde cualquier origen
@@ -49,9 +49,9 @@ async def comprobrar():
     return "Holaaaaaaaaa"
 
 
-@app.get("/")
-async def comprobrar():
-    return "Holaaaaaaaaa"
+app.get("/")
+def read root():
+    return "Welcome to shorten url api"
 
 @app.post("/shortener")
 async def acortar(long_url: Url):
