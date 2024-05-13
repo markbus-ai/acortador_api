@@ -46,8 +46,13 @@ def generate_short_url(long_url):
     return short_url
 @app.get("/shortener")
 async def comprobrar():
-    return "Holaa"
-    
+    return "Holaaaaaaaaa"
+
+
+@app.get("/")
+async def comprobrar():
+    return "Holaaaaaaaaa"
+
 @app.post("/shortener")
 async def acortar(long_url: Url):
     try:
