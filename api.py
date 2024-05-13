@@ -44,7 +44,10 @@ def generate_short_url(long_url):
     short_url = hash_object[:6]
     
     return short_url
-
+@app.get("/shortener")
+async def comprobrar():
+    return "Holaa"
+    
 @app.post("/shortener")
 async def acortar(long_url: Url):
     try:
