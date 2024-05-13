@@ -12,7 +12,8 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
 # Replace with your actual database connection details
-DATABASE_URL = os.environ.get("DATABASE_URL")  # Get URL from Render environment variable
+DATABASE_URL = f"sqlite:///{os.path.join(os.getcwd(), 'urls.db')}"  # Ruta local de SQLite3
+
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
