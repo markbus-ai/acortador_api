@@ -5,6 +5,8 @@ import hashlib
 from pydantic import BaseModel
 import re
 import apsw
+import os
+
 
 
 app = FastAPI()
