@@ -55,7 +55,7 @@ async def acortar(long_url: Url):
             try:
                 short_url = generate_short_url(long_url.url)
                 urls.append({"long_url": long_url.url, "short_url": short_url})
-                return f"https://{short_url}.com"
+                return f"https://acortador-api.onrender/{short_url}.com"
             except:
                 raise HTTPException(status_code=404)
     except:
