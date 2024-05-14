@@ -12,8 +12,9 @@ import os
 app = FastAPI()
 urls = []
 
-# Connect to SQLite database using environment variable
-conn = apsw.Connection(os.environ.get("DATABASE_URL"))
+database_url = "sqlitecloud://cqkzchjlsk.sqlite.cloud:8860?apikey=TJcaW1eojOJOwitNKvdXmUxG9JMFnluQi5V26yv42Dk"  # **Do not use this in production!**
+
+conn = apsw.Connection(database_url)
 cursor = conn.cursor()
 
 # Create a table to store shortened URLs (if it doesn't exist)
