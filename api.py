@@ -6,7 +6,7 @@ from pydantic import BaseModel
 import re
 
 
-app = FastAPI()
+app = FastAPI(root_path="https://acortador-api.onrender")
 urls = []
 
 # Permitir todas las solicitudes CORS desde cualquier origen
@@ -55,7 +55,7 @@ async def acortar(long_url: Url):
             try:
                 short_url = generate_short_url(long_url.url)
                 urls.append({"long_url": long_url.url, "short_url": short_url})
-                return f"https://acortador-api.onrender/{short_url}.com"
+                return f"https://acortador-api.onrender/{short_url}"
             except:
                 raise HTTPException(status_code=404)
     except:
