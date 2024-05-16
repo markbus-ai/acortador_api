@@ -67,12 +67,7 @@ async def generate_short_url(long_url, connection):
 async def acortar(long_url: Url):
     try:
        # if is_valid_url(long_url.url):
-        async with connect_to_database(
-            user="default",
-            password="AUk8be4noEuD",
-            database="verceldb",
-            host="ep-crimson-feather-a4c6mujc-pooler.us-east-1.aws.neon.tech"
-        ) as connection:
+        as connection:
             query = "SELECT short_url FROM urls WHERE long_url = $1"
             existing_short_url = await connection.fetchval(query, long_url.url)
             if existing_short_url:
