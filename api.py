@@ -5,12 +5,12 @@ import hashlib
 from pydantic import BaseModel
 import asyncpg
 
-app = FastAPI(root_path="https://acortador-api.onrender")
+app = FastAPI(root_path="https://acortador-api.onrender.com")
 
-# Permitir solicitudes CORS desde el origen específico de tu frontend en Vercel
+# Permitir solicitudes CORS desde cualquier origen
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://acortador-9c3ktf9d2-markbus-ais-projects.vercel.app"],
+    allow_origins=["*"],  # Permitir cualquier origen
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["*"],
@@ -24,6 +24,15 @@ async def connect_to_database(user, password, database, host):
         host=host
     )
 
+async def some_function():
+    # Llamada a la función connect_to_database() con los valores adecuados
+    connection = await connect_to_database(
+        user="default",
+        password="AUk8be4noEuD",
+        database="verceldb",
+        host="ep-crimson-feather-a4c6mujc-pooler.us-east-1.aws.neon.tech"
+    )
+
 async def recuperar_url_larga(short_url: str, connection):
     """
     Recupera la URL larga correspondiente a una URL corta dada.
@@ -31,6 +40,14 @@ async def recuperar_url_larga(short_url: str, connection):
     query = "SELECT long_url FROM urls WHERE short_url = $1"
     url_larga = await connection.fetchval(query, short_url)
     return url_larga
+
+def is_valid_url(url):
+    """
+    Expresión regular mejorada para validar formatos de URL más complejos y esquemas.
+    """
+    regex = r"""(?i)\b((?:https?|ftp):\/\/(?:www\.)?[a-zA-Z0-9-]+(?:\.[a-zA-Z]{2,})+(?:[^\s]*))"""
+    match = re.search(regex, url)
+    return bool(match)
 
 class Url(BaseModel):
     url: str
@@ -44,17 +61,20 @@ async def generate_short_url(long_url, connection):
     query = "INSERT INTO urls (long_url, short_url) VALUES ($1, $2) RETURNING short_url"
     return await connection.fetchval(query, long_url, short_url)
 
+@app.options("/shortener")  # Manejar solicitudes OPTIONS explícitamente
+async def handle_options():
+    return {}
+
 @app.post("/shortener")
 async def acortar(long_url: Url):
     try:
         if is_valid_url(long_url.url):
-            connection = await connect_to_database(
+            async with connect_to_database(
                 user="default",
                 password="AUk8be4noEuD",
                 database="verceldb",
                 host="ep-crimson-feather-a4c6mujc-pooler.us-east-1.aws.neon.tech"
-            )
-            async with connection:
+            ) as connection:
                 query = "SELECT short_url FROM urls WHERE long_url = $1"
                 existing_short_url = await connection.fetchval(query, long_url.url)
                 if existing_short_url:
@@ -64,7 +84,6 @@ async def acortar(long_url: Url):
                     return f"https://acortador-api.onrender.com/{short_url}"
     except:
         raise HTTPException(status_code=406, detail="formato de url invalido")
-
 
 @app.get("/{short_url}")
 async def redirigir(short_url: str):
