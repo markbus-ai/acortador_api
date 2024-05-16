@@ -3,12 +3,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
 import hashlib
 from pydantic import BaseModel
-import re
-import os
 import asyncpg
 
 app = FastAPI(root_path="https://acortador-api.onrender")
-urls = []
 
 # Permitir todas las solicitudes CORS desde cualquier origen
 app.add_middleware(
@@ -26,15 +23,6 @@ async def connect_to_database(user, password, database, host):
         database=database,
         host=host
     )
-async def some_function():
-    # Llamada a la función connect_to_database() con los valores adecuados
-    connection = await connect_to_database(
-        user="default",
-        password="AUk8be4noEuD",
-        database="verceldb",
-        host="ep-crimson-feather-a4c6mujc-pooler.us-east-1.aws.neon.tech"
-    )
-
 
 async def recuperar_url_larga(short_url: str, connection):
     """
@@ -43,13 +31,6 @@ async def recuperar_url_larga(short_url: str, connection):
     query = "SELECT long_url FROM urls WHERE short_url = $1"
     url_larga = await connection.fetchval(query, short_url)
     return url_larga
-
-    """
-def is_valid_url(url):
-    Expresión regular mejorada para validar formatos de URL más complejos y esquemas.
-    match = re.search(regex, url)
-    return bool(match)
-    """
 
 class Url(BaseModel):
     url: str
@@ -65,18 +46,19 @@ async def generate_short_url(long_url, connection):
 
 @app.post("/shortener")
 async def acortar(long_url: Url):
-    try:
-       # if is_valid_url(long_url.url):
-        as connection:
-            query = "SELECT short_url FROM urls WHERE long_url = $1"
-            existing_short_url = await connection.fetchval(query, long_url.url)
-            if existing_short_url:
-                return existing_short_url
-            else:
-                short_url = await generate_short_url(long_url.url, connection)
-                return f"https://acortador-api.onrender.com/{short_url}"
-    except:
-        raise HTTPException(status_code=406, detail="formato de url invalido")
+    async with connect_to_database(
+        user="default",
+        password="AUk8be4noEuD",
+        database="verceldb",
+        host="ep-crimson-feather-a4c6mujc-pooler.us-east-1.aws.neon.tech"
+    ) as connection:
+        query = "SELECT short_url FROM urls WHERE long_url = $1"
+        existing_short_url = await connection.fetchval(query, long_url.url)
+        if existing_short_url:
+            return existing_short_url
+        else:
+            short_url = await generate_short_url(long_url.url, connection)
+            return f"https://acortador-api.onrender.com/{short_url}"
 
 @app.get("/{short_url}")
 async def redirigir(short_url: str):
