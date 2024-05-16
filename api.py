@@ -48,7 +48,7 @@ def is_valid_url(url):
     """
     Expresión regular mejorada para validar formatos de URL más complejos y esquemas.
     """
-    regex = r"""((http|https)://)(www.)?([a-zA-Z0-9@:%._\+~#?&//=]*)\.[a-zA-Z]+"""
+    regex = r"""(?i)\b((?:https?|ftp):\/\/(?:www\.)?[a-zA-Z0-9-]+(?:\.[a-zA-Z]{2,})+(?:[^\s]*))"""
     match = re.search(regex, url)
     return bool(match)
 
