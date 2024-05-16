@@ -7,10 +7,10 @@ import asyncpg
 
 app = FastAPI(root_path="https://acortador-api.onrender")
 
-# Permitir todas las solicitudes CORS desde cualquier origen
+# Permitir solicitudes CORS desde el origen específico de tu frontend en Vercel
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["https://acortador-9c3ktf9d2-markbus-ais-projects.vercel.app"],
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["*"],
