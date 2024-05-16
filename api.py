@@ -56,7 +56,7 @@ async def generate_short_url(long_url, connection):
 @app.options("/shortener")  # Manejar solicitudes OPTIONS explícitamente
 async def handle_options():
     return {}
-
+@app.post("/shortener")
 async def acortar(long_url: Url):
     try:
         if is_valid_url(long_url.url):
