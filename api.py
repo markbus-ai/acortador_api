@@ -10,6 +10,15 @@ import asyncpg
 app = FastAPI(root_path="https://acortador-api.onrender")
 urls = []
 
+# Permitir todas las solicitudes CORS desde cualquier origen
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allow_headers=["*"],
+)
+
 async def connect_to_database(user, password, database, host):
     return await asyncpg.connect(
         user=user,
@@ -26,17 +35,7 @@ async def some_function():
         host="ep-crimson-feather-a4c6mujc-pooler.us-east-1.aws.neon.tech"
     )
 
-    # Resto del código que utiliza la conexión a la base de datos
 
-
-# Permitir todas las solicitudes CORS desde cualquier origen
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allow_headers=["*"],
-)
 async def recuperar_url_larga(short_url: str, connection):
     """
     Recupera la URL larga correspondiente a una URL corta dada.
