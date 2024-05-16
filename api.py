@@ -57,7 +57,6 @@ async def generate_short_url(long_url, connection):
 async def handle_options():
     return {}
 
-@app.post("/shortener")
 async def acortar(long_url: Url):
     try:
         if is_valid_url(long_url.url):
@@ -77,6 +76,8 @@ async def acortar(long_url: Url):
                     return f"https://acortador-api.onrender.com/{short_url}"
     except:
         raise HTTPException(status_code=406, detail="formato de url invalido")
+
+
 
 @app.get("/{short_url}")
 async def redirigir(short_url: str):
