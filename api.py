@@ -60,7 +60,7 @@ async def handle_options():
 @app.post("/shortener")
 async def acortar(long_url: Url):
     try:
-        async with connect_to_database(
+        async await connect_to_database(
             user="default",
             password="AUk8be4noEuD",
             database="verceldb",
@@ -78,7 +78,7 @@ async def acortar(long_url: Url):
 
 @app.get("/{short_url}")
 async def redirigir(short_url: str):
-    async with connect_to_database(
+    async await connect_to_database(
         user="default",
         password="AUk8be4noEuD",
         database="verceldb",
