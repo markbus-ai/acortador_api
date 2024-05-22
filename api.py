@@ -27,10 +27,10 @@ async def connect_to_database(user, password, database, host):
 async def some_function():
     # Llamada a la función connect_to_database() con los valores adecuados
     connection = await connect_to_database(
-        user="default",
-        password="AUk8be4noEuD",
-        database="verceldb",
-        host="ep-crimson-feather-a4c6mujc-pooler.us-east-1.aws.neon.tech"
+        user="",
+        password="",
+        database="",
+        host=""
     )
 
 async def recuperar_url_larga(short_url: str, connection):
@@ -82,10 +82,10 @@ async def acortar(long_url: Url):
 @app.get("/{short_url}")
 async def redirigir(short_url: str):
     async with connect_to_database(
-        user="default",
-        password="AUk8be4noEuD",
-        database="verceldb",
-        host="ep-crimson-feather-a4c6mujc-pooler.us-east-1.aws.neon.tech"
+        user="",
+        password="",
+        database="",
+        host=""
     ) as connection:
         url_larga = await recuperar_url_larga(short_url, connection)
         if url_larga:
