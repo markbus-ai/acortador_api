@@ -27,10 +27,10 @@ async def connect_to_database(user, password, database, host):
 async def some_function():
     # Llamada a la función connect_to_database() con los valores adecuados
     connection = await connect_to_database(
-        user="",
-        password="",
-        database="",
-        host=""
+        user="default",
+        password="AUk8be4noEuD",
+        database="verceldb",
+        host="ep-crimson-feather-a4c6mujc-pooler.us-east-1.aws.neon.tech"
     )
 
 async def recuperar_url_larga(short_url: str, connection):
@@ -56,39 +56,41 @@ async def generate_short_url(long_url, connection):
 @app.options("/shortener")  # Manejar solicitudes OPTIONS explícitamente
 async def handle_options():
     return {}
+
 @app.post("/shortener")
 async def acortar(long_url: Url):
+    
     try:
-        if is_valid_url(long_url.url):
-            # Esperar a que se establezca la conexión antes de continuar
-            async with connect_to_database(
-                user="default",
-                password="AUk8be4noEuD",
-                database="verceldb",
-                host="ep-crimson-feather-a4c6mujc-pooler.us-east-1.aws.neon.tech"
-            ) as connection:
-                query = "SELECT short_url FROM urls WHERE long_url = $1"
-                existing_short_url = await connection.fetchval(query, long_url.url)
-                if existing_short_url:
-                    return existing_short_url
-                else:
-                    short_url = await generate_short_url(long_url.url, connection)
-                    return f"https://acortador-api.onrender.com/{short_url}"
-    except:
-        raise HTTPException(status_code=406, detail="formato de url invalido")
-
-
+        # Esperar a que se establezca la conexión antes de continuar
+        connection = await connect_to_database(
+            user="default",
+            password="AUk8be4noEuD",
+            database="verceldb",
+            host="ep-crimson-feather-a4c6mujc-pooler.us-east-1.aws.neon.tech"
+        )
+        query = "SELECT short_url FROM urls WHERE long_url = $1"
+        existing_short_url = await connection.fetchval(query, long_url.url)
+        if existing_short_url:
+            return f"El acortador de {long_url.url} ya existe y es {existing_short_url}"
+        else:
+            short_url = await generate_short_url(long_url.url, connection)
+            return f"https://acortador-api.onrender.com/{short_url}"
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error interno del servidor: {str(e)}")
 
 @app.get("/{short_url}")
-async def redirigir(short_url: str):
-    async with connect_to_database(
-        user="",
-        password="",
-        database="",
-        host=""
-    ) as connection:
-        url_larga = await recuperar_url_larga(short_url, connection)
-        if url_larga:
-            return RedirectResponse(url_larga)
-        else:
-            raise HTTPException(status_code=404)
+async def redirigir(short_url):
+    try:
+        async with connect_to_database(
+            user="default",
+            password="AUk8be4noEuD",
+            database="verceldb",
+            host="ep-crimson-feather-a4c6mujc-pooler.us-east-1.aws.neon.tech"
+        ) as connection:
+            url_larga = await recuperar_url_larga(short_url, connection)
+            if url_larga:
+                return RedirectResponse(url_larga)
+            else:
+                raise HTTPException(status_code=404)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"no se ha podido conectar a la base de datos: {str(e)}")
